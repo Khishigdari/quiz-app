@@ -1,7 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -12,8 +13,39 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FileText, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 const GenerateSummary = () => {
+  const [titlePrompt, setTitlePrompt] = useState<string>("");
+  const [contentPrompt, setContentPrompt] = useState<string>("");
+  const [promptSummary, setPromptSummary] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const contentSummary = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setTitlePrompt("");
+    setContentPrompt("");
+    setPromptSummary("");
+
+    try {
+      const response = await fetch("/api/summarizer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ titlePrompt, contentPrompt, promptSummary }),
+      });
+      const data = await response.json();
+      console.log(data.text, "data");
+      if (data.text) {
+        setPromptSummary(data.text);
+      } else {
+        alert("Failed to generate summary");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="w-full">
       <Card>
@@ -49,8 +81,12 @@ const GenerateSummary = () => {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Link href={"/summerized"}>
-            <Button type="submit" className="w-content">
+          <Link href={"/summarized"}>
+            <Button
+              type="submit"
+              className="w-content"
+              onClick={contentSummary}
+            >
               Generate Summary
             </Button>
           </Link>

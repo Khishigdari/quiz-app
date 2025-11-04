@@ -12,10 +12,10 @@ import Link from "next/link";
 
 const QuickTest = () => {
   return (
-    <div>
+    <div className="w-full flex flex-col gap-6">
       <div>
-        <CardHeader className="p-0 flex gap-16">
-          <div>
+        <CardHeader className="p-0 flex justify-between items-center">
+          <div className="flex flex-col gap-2">
             <div className="flex gap-2 items-center">
               <Sparkles />
               <CardTitle>Quick test</CardTitle>
