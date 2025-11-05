@@ -1,3 +1,6 @@
+"use client";
+
+import { useData } from "@/app/_providers/QuizProvider";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +14,8 @@ import { BookOpen, FileText, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 
 const QuickTest = () => {
+  const { titlePrompt, quiz } = useData();
+  console.log(quiz);
   return (
     <div className="w-full flex flex-col gap-6">
       <div>
@@ -25,7 +30,7 @@ const QuickTest = () => {
             </CardDescription>
           </div>
 
-          <Link href={"/summerized"}>
+          <Link href={"/summarized"}>
             <Button variant={"outline"} className="mb-6">
               <X />
             </Button>
@@ -52,15 +57,19 @@ const QuickTest = () => {
                 Article Content
               </p>
             </div>
-            <p></p>
+            <p>{quiz}</p>
           </div>
         </CardContent>
         <CardFooter className="flex justify-start p-0">
-          <Link href={"/quiz"}>
-            <Button type="submit" className="w-content">
-              Take a quiz
-            </Button>
-          </Link>
+          {/* <Link href={"/quiz"}> */}
+          {/* <Button
+            type="submit"
+            className="w-content"
+            onClick={refetchQuizGenerator}
+          >
+            Take a quiz
+          </Button> */}
+          {/* </Linsk> */}
         </CardFooter>
       </Card>
     </div>
