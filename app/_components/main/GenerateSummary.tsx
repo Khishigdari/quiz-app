@@ -24,15 +24,15 @@ const GenerateSummary = () => {
   const contentSummary = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTitlePrompt("");
-    setContentPrompt("");
-    setPromptSummary("");
+    // setTitlePrompt("");
+    // setContentPrompt("");
+    // setPromptSummary("");
 
     try {
       const response = await fetch("/api/summarizer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ titlePrompt, contentPrompt, promptSummary }),
+        body: JSON.stringify({ contentPrompt, promptSummary }),
       });
       const data = await response.json();
       console.log(data.text, "data");
@@ -68,7 +68,11 @@ const GenerateSummary = () => {
                 Article Title
               </p>
             </div>
-            <Input placeholder="Enter a title for your article..." />
+            <Input
+              placeholder="Enter a title for your article..."
+              value={titlePrompt}
+              onChange={(e) => setTitlePrompt(e.target.value)}
+            />
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex gap-1 items-center">
@@ -77,7 +81,11 @@ const GenerateSummary = () => {
                 Article Content
               </p>
             </div>
-            <Textarea placeholder="Paste your article content here..." />
+            <Textarea
+              placeholder="Paste your article content here..."
+              value={contentPrompt}
+              onChange={(e) => setContentPrompt(e.target.value)}
+            />
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
@@ -91,6 +99,7 @@ const GenerateSummary = () => {
             </Button>
           </Link>
         </CardFooter>
+        {promptSummary}
       </Card>
     </div>
   );
