@@ -2,6 +2,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import HomeSideBar from "../_components/home/HomeSideBar";
 import { useState } from "react";
+import { QuizProvider } from "../_providers/QuizProvider";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState<boolean>(false);
@@ -19,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           )}
         </div>
       </main>
-      {children}
+      <QuizProvider>{children}</QuizProvider>
     </SidebarProvider>
   );
 }
