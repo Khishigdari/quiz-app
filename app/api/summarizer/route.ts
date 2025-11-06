@@ -29,15 +29,21 @@ export const POST = async (req: NextRequest) => {
   });
   const text = replaceApostrophes(response.text || "");
 
-  console.log("Title", titlePrompt);
-  console.log("content", transformedContentPrompt);
-  console.log("text", text);
+  // console.log("Title", titlePrompt);
+  // console.log("content", transformedContentPrompt);
+  // console.log("text", text);
 
-  const articleContent = await query(
-    `INSERT INTO article(title, content,summary) VALUES('${titlePrompt}', '${transformedContentPrompt}', '${text}')`
-  );
+  try {
+    const articleContent = await query(
+      `INSERT INTO articles(title, content, summary) VALUES($1, $2, $3)`,
+      [titlePrompt, transformedContentPrompt, text]
+    );
 
-  return NextResponse.json({ text, data: articleContent });
+    return NextResponse.json({ text, data: articleContent });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ text, data: "" });
+  }
 };
 
 export const GET = async () => {
