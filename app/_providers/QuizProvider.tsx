@@ -1,7 +1,9 @@
 "use client";
 
+import { QuizQuestion } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useContext, useState } from "react";
+import axios from "axios";
 
 type Props = {
   children: ReactNode;
@@ -12,7 +14,8 @@ type QuizContextType = {
   contentPrompt: string;
   promptSummary: string;
   loading: boolean;
-  quiz: string;
+  //   quiz: string;
+  quiz: QuizQuestion[];
   refetchContentSummary: (e: React.FormEvent) => Promise<void>;
   refetchQuizGenerator: (e: React.FormEvent) => Promise<void>;
   handleTitle: (value: string) => void;
@@ -29,7 +32,8 @@ export const QuizProvider = ({ children }: Props) => {
   const [contentPrompt, setContentPrompt] = useState<string>("");
   const [promptSummary, setPromptSummary] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [quiz, setQuiz] = useState<string>("");
+  //   const [quiz, setQuiz] = useState<string>("");
+  const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
 
   const contentSummary = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,12 +43,17 @@ export const QuizProvider = ({ children }: Props) => {
     // setPromptSummary("");
 
     try {
-      const response = await fetch("/api/summarizer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contentPrompt, promptSummary }),
+      // const response = await fetch("/api/summarizer", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ contentPrompt, titlePrompt }),
+      // });
+
+      const response = await axios.post("/api/summarizer", {
+        contentPrompt,
+        titlePrompt,
       });
-      const data = await response.json();
+      const data = await response.data;
       console.log(data.text, "data");
       if (data.text) {
         setPromptSummary(data.text);
@@ -81,9 +90,15 @@ export const QuizProvider = ({ children }: Props) => {
       const data = await response.json();
       //   console.log(data.text, "data");
       console.log(data.question, " question ");
-      //   console.log(dat)
       if (data.text) {
-        setQuiz(data.text);
+        //regex for cleaning json
+        let cleanedJson = data.text.replace(/```json\s*|```/g, "").trim();
+
+        // Parse the cleaned JSON
+        const quizData = JSON.parse(cleanedJson);
+
+        console.log(quizData);
+        setQuiz(quizData);
       } else {
         alert("Failed to generate summary");
       }

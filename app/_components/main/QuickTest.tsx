@@ -10,11 +10,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BookOpen, FileText, Sparkles, X } from "lucide-react";
+import { Sparkles, X } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 const QuickTest = () => {
   const { titlePrompt, quiz } = useData();
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
+
+  const currentQuestion = quiz[currentQuestionIndex];
+  const nextQuestion = () => {
+    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+  };
+
   console.log(quiz);
   return (
     <div className="w-full flex flex-col gap-6">
@@ -40,36 +48,32 @@ const QuickTest = () => {
 
       <Card className="p-7">
         <CardContent className="flex flex-col gap-5 p-0">
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-1 items-center">
-              <BookOpen className="w-[11px] h-[13px]" />
-              <p className="text-muted-foreground text-[14px] leading-5 font-semibold">
-                Summarized content
-              </p>
-            </div>
-            <h3 className="text-6 leading-8 font-semibold">Title</h3>
-            <p></p>
+          <div className="flex gap-12 justify-between">
+            <h3 className="text-xl leading-7 font-medium">
+              {currentQuestion.question}
+            </h3>
+            <p className="whitespace-nowrap">
+              {currentQuestionIndex + 1} / {quiz.length}
+            </p>
           </div>
           <div className="flex flex-col gap-1">
-            <div className="flex gap-1 items-center">
-              <FileText className="w-[11px] h-[13px]" />
-              <p className="text-muted-foreground text-[14px] leading-5 font-semibold">
-                Article Content
-              </p>
+            <div className="flex gap-4 flex-wrap ">
+              {currentQuestion.options.map((option, index) => (
+                <Button
+                  variant={"outline"}
+                  key={index}
+                  className="text-[14px] leading-5 text-secondary-foreground font-medium flex justify-center"
+                >
+                  {option}
+                </Button>
+              ))}
             </div>
-            <p>{quiz}</p>
           </div>
         </CardContent>
         <CardFooter className="flex justify-start p-0">
-          {/* <Link href={"/quiz"}> */}
-          {/* <Button
-            type="submit"
-            className="w-content"
-            onClick={refetchQuizGenerator}
-          >
-            Take a quiz
-          </Button> */}
-          {/* </Linsk> */}
+          {currentQuestionIndex < quiz.length - 1 && (
+            <Button onClick={nextQuestion}>Next</Button>
+          )}
         </CardFooter>
       </Card>
     </div>

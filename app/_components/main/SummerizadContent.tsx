@@ -12,8 +12,13 @@ import {
 import { BookOpen, ChevronLeft, FileText, Sparkles } from "lucide-react";
 import Link from "next/link";
 const SummerizedContent = () => {
-  const { promptSummary, contentPrompt, titlePrompt, refetchQuizGenerator } =
-    useData();
+  const {
+    promptSummary,
+    contentPrompt,
+    titlePrompt,
+    loading,
+    refetchQuizGenerator,
+  } = useData();
   return (
     <div>
       <div>
@@ -53,15 +58,14 @@ const SummerizedContent = () => {
           </div>
         </CardContent>
         <CardFooter className="flex justify-start p-0">
-          <Link href={"/quiz"}>
-            <Button
-              type="submit"
-              className="w-content"
-              onClick={refetchQuizGenerator}
-            >
-              Take a quiz
-            </Button>
-          </Link>
+          <Button
+            type="submit"
+            className="w-content"
+            onClick={refetchQuizGenerator}
+            disabled={loading || !contentPrompt || !titlePrompt}
+          >
+            {loading ? "Generating quizes..." : "Take a quiz"}
+          </Button>
         </CardFooter>
       </Card>
     </div>
