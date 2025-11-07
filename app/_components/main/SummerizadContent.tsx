@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { BookOpen, ChevronLeft, FileText, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { SeeContentBtn } from "./SeeContentBtn";
 const SummerizedContent = () => {
   const {
     promptSummary,
@@ -47,7 +48,7 @@ const SummerizedContent = () => {
             <h3 className="text-6 leading-8 font-semibold">{titlePrompt}</h3>
             <p className="text-[14px] leading-5 font-normal">{promptSummary}</p>
           </div>
-          <div className="flex flex-col gap-1">
+          {/* <div className="flex flex-col gap-1">
             <div className="flex gap-1 items-center">
               <FileText className="w-[11px] h-[13px]" />
               <p className="text-muted-foreground text-[14px] leading-5 font-semibold">
@@ -55,9 +56,10 @@ const SummerizedContent = () => {
               </p>
             </div>
             <p className="text-[14px] leading-5 font-normal">{contentPrompt}</p>
-          </div>
+          </div> */}
         </CardContent>
-        <CardFooter className="flex justify-start p-0">
+        <CardFooter className="flex justify-between p-0">
+          <SeeContentBtn />
           <Button
             type="submit"
             className="w-content"

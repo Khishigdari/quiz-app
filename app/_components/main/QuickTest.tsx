@@ -13,6 +13,7 @@ import {
 import { Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import QuizExitBtn from "./QuizExitBtn";
 
 const QuickTest = () => {
   const { titlePrompt, quiz } = useData();
@@ -38,11 +39,7 @@ const QuickTest = () => {
             </CardDescription>
           </div>
 
-          <Link href={"/summarized"}>
-            <Button variant={"outline"} className="mb-6">
-              <X />
-            </Button>
-          </Link>
+          <QuizExitBtn />
         </CardHeader>
       </div>
 
@@ -70,7 +67,7 @@ const QuickTest = () => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-start p-0">
+        <CardFooter className="flex justify-end p-0">
           {currentQuestionIndex < quiz.length - 1 && (
             <Button onClick={nextQuestion}>Next</Button>
           )}
