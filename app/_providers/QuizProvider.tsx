@@ -1,8 +1,14 @@
 "use client";
 
-import { QuizQuestion } from "@/lib/types";
+import { ArticleType, QuizQuestion } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import axios from "axios";
 
 type Props = {
@@ -16,8 +22,10 @@ type QuizContextType = {
   loading: boolean;
   //   quiz: string;
   quiz: QuizQuestion[];
+  articles: ArticleType[];
   refetchContentSummary: (e: React.FormEvent) => Promise<void>;
   refetchQuizGenerator: (e: React.FormEvent) => Promise<void>;
+  refetchArticles: (e: React.FormEvent) => Promise<void>;
   handleTitle: (value: string) => void;
   handleContent: (value: string) => void;
 };
@@ -34,6 +42,7 @@ export const QuizProvider = ({ children }: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
   //   const [quiz, setQuiz] = useState<string>("");
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
+  const [articles, setArticles] = useState<ArticleType[]>([]);
 
   const contentSummary = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,6 +117,18 @@ export const QuizProvider = ({ children }: Props) => {
     }
   };
 
+  const getArticles = async () => {
+    setLoading(true);
+    const result = await axios.get("/api/summarizer");
+    const data = await result.data;
+    setArticles(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getArticles();
+  }, []);
+
   return (
     <QuizContext.Provider
       value={{
@@ -118,8 +139,10 @@ export const QuizProvider = ({ children }: Props) => {
         promptSummary,
         loading,
         quiz,
+        articles,
         refetchContentSummary: contentSummary,
         refetchQuizGenerator: quizGenerator,
+        refetchArticles: getArticles,
       }}
     >
       {children}

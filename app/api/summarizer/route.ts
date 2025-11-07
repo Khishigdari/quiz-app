@@ -47,6 +47,6 @@ export const POST = async (req: NextRequest) => {
 };
 
 export const GET = async () => {
-  const articles = await query("SELECT * FROM article");
-  return Response.json({ message: "success", data: articles });
+  const articles = await query("SELECT * FROM articles");
+  return Response.json({ message: "success", articles });
 };
