@@ -13,8 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ArticleType } from "@/lib/types";
 import axios from "axios";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -23,26 +22,37 @@ type Props = {
 
 const HomeSideBar = ({ open }: Props) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   const [loading, setLoading] = useState<boolean>(false);
   const [articles, setArticles] = useState<ArticleType[]>([]);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const getArticles = async () => {
     setLoading(true);
     const result = await axios.get("/api/summarizer");
     const data = await result.data;
-    console.log(data.articles.rows, "data");
-    setArticles(data.articles.rows);
+    // console.log(data);
+    console.log(data.articles, "data");
+    setArticles(data.articles);
     setLoading(false);
   };
-  console.log(articles, " articles");
+  // console.log(articles, " articles");
   useEffect(() => {
     getArticles();
   }, []);
 
-  const goToHistory = () => {
-    router.push("/history");
+  // const goToHistory = () => {
+  //   router.push("/history");
+  // };
+
+  const handleSelectedArticle = (id: number) => {
+    setSelectedId(id);
+    router.push(`/history?id=${id}`);
   };
+
+  const selectedArticle = articles.find((article) => article.id === Number(id));
 
   return (
     <Sidebar className="z-10">
@@ -58,18 +68,38 @@ const HomeSideBar = ({ open }: Props) => {
           <SidebarGroupContent>
             <SidebarMenu>
               {articles?.map((article) => {
-                console.log("AAA", article);
+                // console.log("AAA", article);
                 return (
                   <SidebarMenuItem key={article.id}>
-                    <SidebarMenuButton asChild onClick={goToHistory}>
+                    <SidebarMenuButton
+                      asChild
+                      onClick={() => handleSelectedArticle(article.id)}
+                      className={`cursor-pointer ${
+                        selectedArticle?.id === article.id
+                          ? "bg-gray-100 font-semibold"
+                          : ""
+                      }`}
+                    >
                       {/* <a href={article.url}>
-                    <item.icon /> */}
+                    <item.icon />  */}
                       <span className="cursor-default">{article.title}</span>
-                      {/* </a> */}
+                      {/* </a>  */}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
               })}
+              {/* {selectedArticle && (
+                <SidebarMenuItem key={selectedArticle.id}>
+                  <SidebarMenuButton asChild onClick={goToHistory}>
+                    <a href={selectedArticle.url}>
+                    <item.icon /> 
+                    <span className="cursor-default">
+                      {selectedArticle.title}
+                    </span>
+                    </a> 
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )} */}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

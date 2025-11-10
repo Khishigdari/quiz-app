@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model articles {
+  id        Int       @id @default(autoincrement())
+  title     String?
+  content   String?
+  summary   String?
+  userid    Int?
+  createdat DateTime? @default(now()) @db.Timestamptz(6)
+  updatedat DateTime? @default(now()) @db.Timestamptz(6)
+  users     users?    @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  quizzes   quizzes[]
+}
+
+model quizattempts {
+  id        Int       @id @default(autoincrement())
+  quizid    Int
+  userid    Int
+  score     Int?
+  timespent Int?
+  createdat DateTime? @default(now()) @db.Timestamptz(6)
+  quizzes   quizzes   @relation(fields: [quizid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model quizzes {
+  id           Int            @id @default(autoincrement())
+  question     String?
+  options      String[]
+  answer       String?
+  articleid    Int
+  createdat    DateTime?      @default(now()) @db.Timestamptz(6)
+  updatedat    DateTime?      @default(now()) @db.Timestamptz(6)
+  quizattempts quizattempts[]
+  articles     articles       @relation(fields: [articleid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  userscores   userscores[]
+}
+
+model users {
+  id           Int            @id @default(autoincrement())
+  clerkid      String         @unique
+  email        String         @unique @db.VarChar(50)
+  name         String?        @db.VarChar(50)
+  createdat    DateTime?      @default(now()) @db.Timestamptz(6)
+  updatedat    DateTime?      @default(now()) @db.Timestamptz(6)
+  articles     articles[]
+  quizattempts quizattempts[]
+  userscores   userscores[]
+}
+
+model userscores {
+  id        Int       @id @default(autoincrement())
+  quizid    Int
+  userid    Int
+  score     Int?
+  createdat DateTime? @default(now()) @db.Timestamptz(6)
+  quizzes   quizzes   @relation(fields: [quizid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}

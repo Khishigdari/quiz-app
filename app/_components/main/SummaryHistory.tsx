@@ -1,6 +1,5 @@
 "use client";
 
-import { SeeContentBtn } from "@/app/_components/main/SeeContentBtn";
 import { useData } from "@/app/_providers/QuizProvider";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,32 +9,43 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArticleType } from "@/lib/types";
-import axios from "axios";
 import { BookOpen, ChevronLeft, FileText, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { SeeContentBtn } from "./SeeContentBtn";
 
 const SummaryHistory = () => {
-  const { refetchQuizGenerator } = useData();
-  const router = useRouter();
+  const { refetchQuizGenerator, handleContent, articles } = useData();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [articles, setArticles] = useState<ArticleType[]>([]);
 
-  const getArticles = async () => {
-    setLoading(true);
-    const result = await axios.get("/api/summarizer");
-    const data = await result.data;
-    console.log(data.articles.rows, "data");
-    setArticles(data.articles.rows);
-    setLoading(false);
-  };
-  console.log(articles, " articles");
+  // const getArticles = async () => {
+  //   setLoading(true);
+  //   const result = await axios.get("/api/summarizer");
+  //   const data = await result.data;
+  //   console.log(data, "summary data");
+  //   console.log(data.articles, "data");
+  //   setArticles(data.articles);
+  //   setLoading(false);
+  // };
+  // // console.log(articles, " articles");
+  // useEffect(() => {
+  //   getArticles();
+  // }, []);
+  console.log("articles", articles);
+
+  const findArticleHistory = articles?.articles?.find(
+    (article) => article.id == id
+  );
+
   useEffect(() => {
-    getArticles();
-  }, []);
+    if (findArticleHistory) {
+      handleContent(findArticleHistory.content);
+    }
+  }, [findArticleHistory]);
 
   return (
     <div>
@@ -48,7 +58,7 @@ const SummaryHistory = () => {
       </div>
 
       <Card className="p-7">
-        {articles.map((article) => {
+        {/* {articles?.map((article) => {
           return (
             <div key={article.id}>
               <CardHeader className="p-0">
@@ -86,10 +96,47 @@ const SummaryHistory = () => {
               </CardContent>
             </div>
           );
-        })}
+        })} */}
+        {findArticleHistory && (
+          <div key={findArticleHistory.id}>
+            <CardHeader className="p-0">
+              <div className="flex gap-2 items-center">
+                <Sparkles />
+                <CardTitle>Article Quiz Generator</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-5 p-0">
+              <div className="flex flex-col gap-1">
+                <div className="flex gap-1 items-center">
+                  <BookOpen className="w-[11px] h-[13px]" />
+                  <p className="text-muted-foreground text-[14px] leading-5 font-semibold">
+                    Summarized content
+                  </p>
+                </div>
+                <h3 className="text-6 leading-8 font-semibold">
+                  {findArticleHistory.title}
+                </h3>
+                <p className="text-[14px] leading-5 font-normal">
+                  {findArticleHistory.summary}
+                </p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="flex gap-1 items-center">
+                  <FileText className="w-[11px] h-[13px]" />
+                  <p className="text-muted-foreground text-[14px] leading-5 font-semibold">
+                    Article Content
+                  </p>
+                </div>
+                <p className="text-[14px] leading-5 font-normal">
+                  {findArticleHistory.content}
+                </p>
+              </div>
+            </CardContent>
+          </div>
+        )}
 
         <CardFooter className="flex justify-between p-0">
-          {/* <SeeContentBtn /> */}
+          <SeeContentBtn />
           <Button
             type="submit"
             className="w-content"

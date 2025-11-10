@@ -1,12 +1,13 @@
 import { query } from "@/lib/connectDb";
+import { prisma } from "@/lib/prisma";
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-const replaceApostrophes = (str: string) => {
-  return str.replace(/(\w)+'+(\w+)/g, "$1 $2");
-};
+// const replaceApostrophes = (str: string) => {
+//   return str.replace(/(\w)+'+(\w+)/g, "$1 $2");
+// };
 
 export const POST = async (req: NextRequest) => {
   const { contentPrompt, titlePrompt } = await req.json();
@@ -18,7 +19,9 @@ export const POST = async (req: NextRequest) => {
     );
   }
 
-  const transformedContentPrompt = replaceApostrophes(contentPrompt);
+  // const transformedContentPrompt = replaceApostrophes(contentPrompt);
+
+  const transformedContentPrompt = contentPrompt;
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
@@ -27,17 +30,27 @@ export const POST = async (req: NextRequest) => {
       systemInstruction: `You have to make a short summary of the submitted content within 5 sentences. `,
     },
   });
-  const text = replaceApostrophes(response.text || "");
+  // const text = replaceApostrophes(response.text || "");
+
+  const text = response.text || "";
 
   // console.log("Title", titlePrompt);
   // console.log("content", transformedContentPrompt);
   // console.log("text", text);
 
   try {
-    const articleContent = await query(
-      `INSERT INTO articles(title, content, summary) VALUES($1, $2, $3)`,
-      [titlePrompt, transformedContentPrompt, text]
-    );
+    // const articleContent = await query(
+    //   `INSERT INTO articles(title, content, summary) VALUES($1, $2, $3)`,
+    //   [titlePrompt, transformedContentPrompt, text]
+    // );
+
+    const articleContent = await prisma.articles.create({
+      data: {
+        title: titlePrompt,
+        content: transformedContentPrompt,
+        summary: text,
+      },
+    });
 
     return NextResponse.json({ text, data: articleContent });
   } catch (e) {
@@ -47,6 +60,50 @@ export const POST = async (req: NextRequest) => {
 };
 
 export const GET = async () => {
-  const articles = await query("SELECT * FROM articles");
+  // const articles = await query("SELECT * FROM articles");
+  const articles = await prisma.articles.findMany();
   return Response.json({ message: "success", articles });
 };
+
+// ==============================
+
+// import { prisma } from "@/lib/prisma";
+// import { GoogleGenAI } from "@google/genai";
+// import { NextRequest, NextResponse } from "next/server";
+
+// const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+// const replaceApostrophes = (str: string) => str.replace(/(\w)'(\w)/g, "$1 $2");
+
+// export const POST = async (req: NextRequest) => {
+//   const { contentPrompt, titlePrompt } = await req.json();
+
+//   if (!contentPrompt) {
+//     return NextResponse.json(
+//       { error: "Title and content prompt is required" },
+//       { status: 400 }
+//     );
+//   }
+
+//   const transformedContentPrompt = replaceApostrophes(contentPrompt);
+
+//   const response = await ai.models.generateContent({
+//     model: "gemini-2.5-flash",
+//     contents: [{ text: transformedContentPrompt }],
+//     config: {
+//       systemInstruction: `Summarize within 5 sentences.`,
+//     },
+//   });
+
+//   const text = replaceApostrophes(response.text || "");
+
+//   const articleContent = await prisma.article.create({
+//     data: {
+//       title: titlePrompt,
+//       content: transformedContentPrompt,
+//       summary: text,
+//     },
+//   });
+
+//   return NextResponse.json({ text, data: articleContent });
+// };

@@ -10,13 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Sparkles, X } from "lucide-react";
-import Link from "next/link";
+import { Sparkles } from "lucide-react";
 import { useState } from "react";
 import QuizExitBtn from "./QuizExitBtn";
 
 const QuickTest = () => {
-  const { titlePrompt, quiz } = useData();
+  const { quiz } = useData();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
 
   const currentQuestion = quiz[currentQuestionIndex];
