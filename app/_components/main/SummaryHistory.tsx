@@ -10,11 +10,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BookOpen, ChevronLeft, FileText, Sparkles } from "lucide-react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SeeContentBtn } from "./SeeContentBtn";
 
 const SummaryHistory = () => {
+  const router = useRouter();
   const { refetchQuizGenerator, articles } = useData();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -22,6 +22,10 @@ const SummaryHistory = () => {
   const { loading, findArticleHistory } = useData();
 
   console.log("articles", articles);
+
+  const goToHomePage = () => {
+    router.push("/");
+  };
 
   // const findArticleHistory = articles?.articles?.find(
   //   (article) => article.id == id
@@ -36,11 +40,11 @@ const SummaryHistory = () => {
   return (
     <div>
       <div>
-        <Link href={"/"}>
-          <Button variant={"outline"} className="mb-6">
-            <ChevronLeft />
-          </Button>
-        </Link>
+        {/* <Link href={"/"}> */}
+        <Button variant={"outline"} className="mb-6" onClick={goToHomePage}>
+          <ChevronLeft />
+        </Button>
+        {/* </Link> */}
       </div>
       <Card className="p-7">
         {findArticleHistory && (

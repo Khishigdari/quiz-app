@@ -43,10 +43,6 @@ const HomeSideBar = ({ open }: Props) => {
     getArticles();
   }, []);
 
-  // const goToHistory = () => {
-  //   router.push("/history");
-  // };
-
   const handleSelectedArticle = (id: number) => {
     setSelectedId(id);
     router.push(`/history?id=${id}`);

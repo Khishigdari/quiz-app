@@ -81,6 +81,8 @@ export const QuizProvider = ({ children }: Props) => {
       }
     } finally {
       setLoading(false);
+      // setTitlePrompt("");
+      // setContentPrompt("");
       router.push("/summarized");
     }
   };
