@@ -64,8 +64,7 @@ const HomeSideBar = ({ open }: Props) => {
             </SidebarGroupLabel>
             {open ? <SidebarTrigger className="w-6 h-6" /> : ""}
           </div>
-
-          <SidebarGroupContent>
+          <SidebarGroupContent className="overflow-y-auto">
             <SidebarMenu>
               {articles?.map((article) => {
                 // console.log("AAA", article);
@@ -80,26 +79,13 @@ const HomeSideBar = ({ open }: Props) => {
                           : ""
                       }`}
                     >
-                      {/* <a href={article.url}>
-                    <item.icon />  */}
-                      <span className="cursor-default">{article.title}</span>
-                      {/* </a>  */}
+                      <span className="cursor-default truncate">
+                        {article.title}
+                      </span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
               })}
-              {/* {selectedArticle && (
-                <SidebarMenuItem key={selectedArticle.id}>
-                  <SidebarMenuButton asChild onClick={goToHistory}>
-                    <a href={selectedArticle.url}>
-                    <item.icon /> 
-                    <span className="cursor-default">
-                      {selectedArticle.title}
-                    </span>
-                    </a> 
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )} */}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

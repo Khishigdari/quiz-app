@@ -1,10 +1,11 @@
+import { prisma } from "@/lib/prisma";
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export const POST = async (req: NextRequest) => {
-  const { contentPrompt, quiz } = await req.json();
+  const { contentPrompt, quiz, articleId } = await req.json();
 
   if (!contentPrompt) {
     return NextResponse.json(
@@ -29,7 +30,38 @@ export const POST = async (req: NextRequest) => {
       Question: ${quiz}`,
     },
   });
-  const text = response.text;
+  const text = response.text || "[]";
+  console.log(text, " json text test");
 
-  return NextResponse.json({ text });
+  let cleanedJson = text.replace(/```json\s*|```/g, "").trim();
+
+  let quizArray: any[] = [];
+  quizArray = JSON.parse(cleanedJson);
+  console.log(quizArray, "array of quizes");
+
+  try {
+    // const articleContent = await query(
+    //   `INSERT INTO articles(title, content, summary) VALUES($1, $2, $3)`,
+    //   [titlePrompt, transformedContentPrompt, text]
+    // );
+
+    const quizContent = await prisma.quizzes.createMany({
+      data: quizArray.map((q) => ({
+        question: q.question,
+        options: q.options,
+        answer: q.answer,
+        articleid: articleId,
+      })),
+    });
+
+    return NextResponse.json({ text, data: quizContent });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ text, data: "" });
+  }
+};
+
+export const GET = async () => {
+  const quizzes = await prisma.quizzes.findMany();
+  return Response.json({ message: "success", quizzes });
 };

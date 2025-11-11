@@ -1,7 +1,7 @@
 "use client";
 
 import { ArticleType, QuizQuestion } from "@/lib/types";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   createContext,
   ReactNode,
@@ -28,6 +28,7 @@ type QuizContextType = {
   refetchArticles: (e: React.FormEvent) => Promise<void>;
   handleTitle: (value: string) => void;
   handleContent: (value: string) => void;
+  findArticleHistory: any;
 };
 
 //creating context
@@ -43,6 +44,10 @@ export const QuizProvider = ({ children }: Props) => {
   //   const [quiz, setQuiz] = useState<string>("");
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
   const [articles, setArticles] = useState<ArticleType[]>([]);
+  const [articleId, setArticleId] = useState<number | null>(null);
+
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   const contentSummary = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,12 +67,17 @@ export const QuizProvider = ({ children }: Props) => {
         contentPrompt,
         titlePrompt,
       });
+      console.log(response, "responseeeee");
       const data = await response.data;
-      console.log(data.text, "data");
+      console.log(data.text, "dataaaaaa");
       if (data.text) {
         setPromptSummary(data.text);
       } else {
         alert("Failed to generate summary");
+      }
+
+      if (data.data?.id) {
+        setArticleId(data.data.id);
       }
     } finally {
       setLoading(false);
@@ -94,7 +104,7 @@ export const QuizProvider = ({ children }: Props) => {
       const response = await fetch("/api/quizQs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contentPrompt, quiz }),
+        body: JSON.stringify({ contentPrompt, quiz, articleId }),
       });
       const data = await response.json();
       //   console.log(data.text, "data");
@@ -129,6 +139,17 @@ export const QuizProvider = ({ children }: Props) => {
     getArticles();
   }, []);
 
+  console.log(articles, "articleType articles");
+  const findArticleHistory = articles?.articles?.find(
+    (article) => article.id == id
+  );
+
+  useEffect(() => {
+    if (findArticleHistory) {
+      handleContent(findArticleHistory.content);
+    }
+  }, [findArticleHistory]);
+
   return (
     <QuizContext.Provider
       value={{
@@ -140,6 +161,7 @@ export const QuizProvider = ({ children }: Props) => {
         loading,
         quiz,
         articles,
+        findArticleHistory,
         refetchContentSummary: contentSummary,
         refetchQuizGenerator: quizGenerator,
         refetchArticles: getArticles,

@@ -2,6 +2,7 @@ export type QuizQuestion = {
   question: string;
   options: string[];
   answer: number;
+  // articleId: ArticleType;
 };
 
 export type ArticleType = {
