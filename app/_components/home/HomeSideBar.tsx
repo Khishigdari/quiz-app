@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ArticleType } from "@/lib/types";
 import axios from "axios";
+import { Trash } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -75,9 +76,16 @@ const HomeSideBar = ({ open }: Props) => {
                           : ""
                       }`}
                     >
-                      <span className="cursor-default truncate">
-                        {article.title}
-                      </span>
+                      <div className="flex gap-1">
+                        <span className="cursor-default truncate">
+                          {article.title}
+                        </span>
+                        <Trash
+                          className={`hidden ${
+                            selectedArticle?.id === article.id ? "block" : "  "
+                          }`}
+                        />
+                      </div>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );

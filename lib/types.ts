@@ -3,6 +3,7 @@ export type QuizQuestion = {
   options: string[];
   answer: number;
   // articleId: ArticleType;
+  selectedAnswer?: number;
 };
 
 export type ArticleType = {

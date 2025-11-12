@@ -4,6 +4,7 @@ import { ArticleType, QuizQuestion } from "@/lib/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   createContext,
+  FormEvent,
   ReactNode,
   useContext,
   useEffect,
@@ -23,11 +24,20 @@ type QuizContextType = {
   //   quiz: string;
   quiz: QuizQuestion[];
   articles: ArticleType[];
+  articleId: number | null;
+  currentQuestionIndex: number;
+  showResult: boolean;
   refetchContentSummary: (e: React.FormEvent) => Promise<void>;
   refetchQuizGenerator: (e: React.FormEvent) => Promise<void>;
   refetchArticles: (e: React.FormEvent) => Promise<void>;
+  refetchQuizAnswer: (index: number) => void;
   handleTitle: (value: string) => void;
   handleContent: (value: string) => void;
+  handleQuiz: (value: QuizQuestion[]) => void;
+  handleArticleId: (value: number) => void;
+  handleCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
+  handleQuizRawText: (value: string) => void;
+
   findArticleHistory: any;
 };
 
@@ -45,6 +55,9 @@ export const QuizProvider = ({ children }: Props) => {
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
   const [articles, setArticles] = useState<ArticleType[]>([]);
   const [articleId, setArticleId] = useState<number | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
+  const [quizRawText, setQuizRawText] = useState<string>("");
+  const [showResult, setShowResult] = useState<boolean>(false);
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -95,6 +108,23 @@ export const QuizProvider = ({ children }: Props) => {
     setContentPrompt(value);
   };
 
+  const handleQuiz = (value: QuizQuestion[]) => {
+    setQuiz(value);
+  };
+
+  const handleArticleId = (value: number | null) => {
+    setArticleId(value);
+  };
+
+  const handleCurrentQuestionIndex: React.Dispatch<
+    React.SetStateAction<number>
+  > = (value) => {
+    setCurrentQuestionIndex(value);
+  };
+  const handleQuizRawText = (value: string) => {
+    setQuizRawText(value);
+  };
+
   const quizGenerator = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -120,13 +150,24 @@ export const QuizProvider = ({ children }: Props) => {
 
         console.log(quizData);
         setQuiz(quizData);
+        setQuiz(data.data || []);
+        setCurrentQuestionIndex(0);
+        setShowResult(false);
+        localStorage.setItem("quizResult", JSON.stringify(data));
       } else {
         alert("Failed to generate summary");
       }
     } finally {
       setLoading(false);
+
       router.push("/quiz");
     }
+  };
+
+  const handleAnswer = (index: number) => {
+    const newQuizData = [...quiz];
+    newQuizData[currentQuestionIndex].selectedAnswer = index;
+    setQuiz(newQuizData);
   };
 
   const getArticles = async () => {
@@ -157,6 +198,10 @@ export const QuizProvider = ({ children }: Props) => {
       value={{
         handleTitle,
         handleContent,
+        handleQuiz,
+        handleArticleId,
+        handleCurrentQuestionIndex,
+        handleQuizRawText,
         titlePrompt,
         contentPrompt,
         promptSummary,
@@ -164,9 +209,13 @@ export const QuizProvider = ({ children }: Props) => {
         quiz,
         articles,
         findArticleHistory,
+        articleId,
+        currentQuestionIndex,
+        showResult,
         refetchContentSummary: contentSummary,
         refetchQuizGenerator: quizGenerator,
         refetchArticles: getArticles,
+        refetchQuizAnswer: handleAnswer,
       }}
     >
       {children}
