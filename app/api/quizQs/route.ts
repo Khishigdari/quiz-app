@@ -53,6 +53,7 @@ export const POST = async (req: NextRequest) => {
         articleid: articleId,
       })),
     });
+    console.log(quizContent, "content aaaaaaaaaa");
 
     return NextResponse.json({ text, data: quizContent });
   } catch (e) {

@@ -30,6 +30,7 @@ type QuizContextType = {
   refetchContentSummary: (e: React.FormEvent) => Promise<void>;
   refetchQuizGenerator: (e: React.FormEvent) => Promise<void>;
   refetchArticles: (e: React.FormEvent) => Promise<void>;
+  refetchQuizzes: (e: React.FormEvent) => Promise<void>;
   refetchQuizAnswer: (index: number) => void;
   handleTitle: (value: string) => void;
   handleContent: (value: string) => void;
@@ -133,14 +134,15 @@ export const QuizProvider = ({ children }: Props) => {
     // setPromptSummary("");
 
     try {
-      const response = await fetch("/api/quizQs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contentPrompt, quiz, articleId }),
+      const response = await axios.post("/api/quizQs", {
+        contentPrompt,
+        quiz,
+        articleId,
       });
-      const data = await response.json();
+      const data = await response.data;
+      console.log(data, " aaaaaaaaa");
       //   console.log(data.text, "data");
-      console.log(data.question, " question ");
+      // console.log(data.question, " question ");
       if (data.text) {
         //regex for cleaning json
         let cleanedJson = data.text.replace(/```json\s*|```/g, "").trim();
@@ -153,7 +155,7 @@ export const QuizProvider = ({ children }: Props) => {
         setQuiz(data.data || []);
         setCurrentQuestionIndex(0);
         setShowResult(false);
-        localStorage.setItem("quizResult", JSON.stringify(data));
+        // localStorage.setItem("quizResult", JSON.stringify(data));
       } else {
         alert("Failed to generate summary");
       }
@@ -164,12 +166,6 @@ export const QuizProvider = ({ children }: Props) => {
     }
   };
 
-  const handleAnswer = (index: number) => {
-    const newQuizData = [...quiz];
-    newQuizData[currentQuestionIndex].selectedAnswer = index;
-    setQuiz(newQuizData);
-  };
-
   const getArticles = async () => {
     setLoading(true);
     const result = await axios.get("/api/summarizer");
@@ -178,9 +174,24 @@ export const QuizProvider = ({ children }: Props) => {
     setLoading(false);
   };
 
+  const getQuizzes = async () => {
+    setLoading(true);
+    const result = await axios.get("/api/quizQs");
+    const data = await result.data;
+    setQuiz(data);
+    setLoading(false);
+  };
+
   useEffect(() => {
     getArticles();
+    getQuizzes();
   }, []);
+
+  const handleAnswer = (index: number) => {
+    const newQuizData = [...quiz];
+    newQuizData[currentQuestionIndex].selectedAnswer = index;
+    setQuiz(newQuizData);
+  };
 
   console.log(articles, "articleType articles");
   const findArticleHistory = articles?.articles?.find(
@@ -216,6 +227,7 @@ export const QuizProvider = ({ children }: Props) => {
         refetchQuizGenerator: quizGenerator,
         refetchArticles: getArticles,
         refetchQuizAnswer: handleAnswer,
+        refetchQuizzes: getQuizzes,
       }}
     >
       {children}
