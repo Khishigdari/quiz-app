@@ -4,7 +4,6 @@ import { ArticleType, QuizQuestion } from "@/lib/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   createContext,
-  FormEvent,
   ReactNode,
   useContext,
   useEffect,
@@ -21,7 +20,6 @@ type QuizContextType = {
   contentPrompt: string;
   promptSummary: string;
   loading: boolean;
-  //   quiz: string;
   quiz: QuizQuestion[];
   articles: ArticleType[];
   articleId: number | null;
@@ -38,7 +36,6 @@ type QuizContextType = {
   handleArticleId: (value: number) => void;
   handleCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
   handleQuizRawText: (value: string) => void;
-
   findArticleHistory: any;
 };
 
@@ -52,7 +49,6 @@ export const QuizProvider = ({ children }: Props) => {
   const [contentPrompt, setContentPrompt] = useState<string>("");
   const [promptSummary, setPromptSummary] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  //   const [quiz, setQuiz] = useState<string>("");
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
   const [articles, setArticles] = useState<ArticleType[]>([]);
   const [articleId, setArticleId] = useState<number | null>(null);
@@ -152,7 +148,7 @@ export const QuizProvider = ({ children }: Props) => {
 
         console.log(quizData);
         setQuiz(quizData);
-        setQuiz(data.data || []);
+        // setQuiz(data.data || []);
         setCurrentQuestionIndex(0);
         setShowResult(false);
         // localStorage.setItem("quizResult", JSON.stringify(data));
@@ -191,6 +187,12 @@ export const QuizProvider = ({ children }: Props) => {
     const newQuizData = [...quiz];
     newQuizData[currentQuestionIndex].selectedAnswer = index;
     setQuiz(newQuizData);
+
+    if (currentQuestionIndex < newQuizData.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    } else {
+      setShowResult(true);
+    }
   };
 
   console.log(articles, "articleType articles");

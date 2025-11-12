@@ -10,21 +10,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Sparkles } from "lucide-react";
+import { CircleCheck, CircleX, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import QuizExitBtn from "./QuizExitBtn";
 import { useParams } from "next/navigation";
 import axios from "axios";
 
 const QuickTest = () => {
-  // const path = useParams();
+  const path = useParams();
+  // const { articleId } = useParams();
 
   const {
     quiz,
     currentQuestionIndex,
     showResult,
+    articleId,
     handleQuiz,
-
+    handleArticleId,
     refetchQuizAnswer,
   } = useData();
 
@@ -34,21 +36,21 @@ const QuickTest = () => {
   // const [quizRawText, setQuizRawText] = useState<string>("");
   // const [showResult, setShowResult] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   const result = localStorage.getItem("quizResult");
-  //   if (result) {
-  //     handleQuizRawText(result);
-  //     try {
-  //       const parseData = JSON.parse(result);
-  //       handleQuiz(parseData.quizArray || []);
-  //     } catch (e) {
-  //       console.error("Failed to parse quizResult:", e);
-  //     }
-  //   }
+  useEffect(() => {
+    //   const result = localStorage.getItem("quizResult");
+    //   if (result) {
+    //     handleQuizRawText(result);
+    //     try {
+    //       const parseData = JSON.parse(result);
+    //       handleQuiz(parseData.quizArray || []);
+    //     } catch (e) {
+    //       console.error("Failed to parse quizResult:", e);
+    //     }
+    //   }
 
-  //   const idFromPath = path.id;
-  //   if (idFromPath) handleArticleId(Number(idFromPath));
-  // }, [path]);
+    const idFromPath = path.id;
+    if (idFromPath) handleArticleId(Number(idFromPath));
+  }, [path]);
 
   // const currentQuestion = quiz[currentQuestionIndex];
   // const nextQuestion = () => {
@@ -59,70 +61,23 @@ const QuickTest = () => {
 
   const getQuizzes = async () => {
     setLoading(true);
-    const result = await axios.get("/api/quizQs");
-    const data = await result.data;
+    try {
+      const result = await axios.get(`/api/quizQs`);
+      const data = await result.data;
 
-    console.log("hello", data);
-    handleQuiz(data.quizzes);
-    setLoading(false);
+      console.log("hello", data);
+      handleQuiz(data.quizzes);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    getQuizzes();
-  }, []);
+    if (articleId) getQuizzes();
+  }, [articleId]);
 
   console.log("nuhtsul", quiz.length);
   return (
-    // <div className="w-full flex flex-col gap-6">
-    //   <div>
-    //     <CardHeader className="p-0 flex justify-between items-center">
-    //       <div className="flex flex-col gap-2">
-    //         <div className="flex gap-2 items-center">
-    //           <Sparkles />
-    //           <CardTitle>Quick test</CardTitle>
-    //         </div>
-    //         <CardDescription>
-    //           Take a quick test about your knowledge from your content{" "}
-    //         </CardDescription>
-    //       </div>
-
-    //       <QuizExitBtn />
-    //     </CardHeader>
-    //   </div>
-
-    //   <Card className="p-7">
-    //     <CardContent className="flex flex-col gap-5 p-0">
-    //       <div className="flex gap-12 justify-between">
-    //         <h3 className="text-xl leading-7 font-medium">
-    //           {currentQuestion.question}
-    //         </h3>
-    //         <p className="whitespace-nowrap">
-    //           {currentQuestionIndex + 1} / {quiz.length}
-    //         </p>
-    //       </div>
-    //       <div className="flex flex-col gap-1">
-    //         <div className="flex gap-4 flex-wrap ">
-    //           {currentQuestion.options.map((option, index) => (
-    //             <Button
-    //               variant={"outline"}
-    //               key={index}
-    //               className="text-[14px] leading-5 text-secondary-foreground font-medium flex justify-center"
-    //               onClick={() => refetchQuizAnswer(index)}
-    //             >
-    //               {option}
-    //             </Button>
-    //           ))}
-    //         </div>
-    //       </div>
-    //     </CardContent>
-    //     <CardFooter className="flex justify-end p-0">
-    //       {currentQuestionIndex < quiz.length - 1 && (
-    //         <Button onClick={nextQuestion}>Next</Button>
-    //       )}
-    //     </CardFooter>
-    //   </Card>
-    // </div>
-
     <div className="w-full flex flex-col gap-6">
       {!showResult ? (
         <div>
@@ -150,6 +105,7 @@ const QuickTest = () => {
                     <h3 className="text-xl leading-7 font-medium">
                       {currentQuestionIndex + 1}.
                       {quiz[currentQuestionIndex].question}
+                      {/* {quiz[currentQuestionIndex].question} */}
                     </h3>
                     <p className="whitespace-nowrap">
                       {currentQuestionIndex + 1} / {quiz.length}
@@ -157,7 +113,7 @@ const QuickTest = () => {
                   </div>
                   {quiz[currentQuestionIndex].options.map((opt, i) => (
                     <div className="flex flex-col gap-1" key={i}>
-                      <div className="flex gap-4 flex-wrap  ">
+                      <div className="flex gap-4 flex-wrap ">
                         {/* {currentQuestion.options.map((option, index) => ( */}
                         <Button
                           variant={"outline"}
@@ -181,23 +137,31 @@ const QuickTest = () => {
         </div>
       ) : (
         <div>
-          <Card className="w-[450px] mt-5 p-4 text-center">
-            {showResult && (
-              <div>
-                <div className="flex gap-3">
-                  <img src={"/star2.png"} className="w-6 h-6 mt-1" />
-                  <CardTitle className="font-semibold text-xl">
-                    {" "}
-                    Quiz Completed!
-                  </CardTitle>
-                </div>
-                <CardDescription>Let’s see what you did</CardDescription>
-
+          {showResult && (
+            <div>
+              <div className="flex gap-3">
+                <Sparkles />{" "}
+                <CardTitle className="font-semibold text-xl">
+                  {" "}
+                  Quiz Completed!
+                </CardTitle>
+              </div>
+              <CardDescription>Let’s see what you did</CardDescription>
+              <Card className="w-[450px] mt-5 p-4 text-center">
                 <p className="mt-3">
                   Your score:{" "}
                   {quiz.filter((q) => q.selectedAnswer === q.answer).length} /{" "}
                   {quiz.length}
                 </p>
+                {quiz.filter((q) => q.selectedAnswer === q.answer) ? (
+                  <div>
+                    <CircleCheck className="text-green-500" />
+                  </div>
+                ) : (
+                  <div>
+                    <CircleX className="text-[#B91C1C]" />
+                  </div>
+                )}
                 <div className="flex justify-between mt-4">
                   <Button
                     className="text-black bg-white border"
@@ -208,10 +172,10 @@ const QuickTest = () => {
                   {/* <Button className="flex" onClick={saveAndLeave}>
                     Save and Leave
                   </Button> */}
-                </div>
-              </div>
-            )}
-          </Card>
+                </div>{" "}
+              </Card>
+            </div>
+          )}
 
           {/* {quizData.length === 0 && (
             <Button onClick={generateQuiz}>Generate Quiz (Re-fetch)</Button>

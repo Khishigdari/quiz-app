@@ -4,6 +4,8 @@ export type QuizQuestion = {
   answer: number;
   // articleId: ArticleType;
   selectedAnswer?: number;
+  userAnswer?: string;
+  showResult: boolean;
 };
 
 export type ArticleType = {
