@@ -76,7 +76,11 @@ const QuickTest = () => {
     if (articleId) getQuizzes();
   }, [articleId]);
 
-  console.log("nuhtsul", quiz.length);
+  // console.log("nuhtsul", quiz.length);
+  // console.log(
+  //   quiz.filter((q) => q.selectedAnswer === q.answer),
+  //   "blabla"
+  // );
   return (
     <div className="w-full flex flex-col gap-6">
       {!showResult ? (
@@ -150,10 +154,10 @@ const QuickTest = () => {
               <Card className="w-[450px] mt-5 p-4 text-center">
                 <p className="mt-3">
                   Your score:{" "}
-                  {quiz.filter((q) => q.selectedAnswer === q.answer).length} /{" "}
+                  {quiz.filter((q) => q.selectedAnswer == q.answer).length}/{" "}
                   {quiz.length}
                 </p>
-                {quiz.filter((q) => q.selectedAnswer === q.answer) ? (
+                {quiz.filter((q) => q.selectedAnswer == q.answer) ? (
                   <div>
                     <CircleCheck className="text-green-500" />
                   </div>

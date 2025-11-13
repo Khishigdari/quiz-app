@@ -77,9 +77,9 @@ export const QuizProvider = ({ children }: Props) => {
         contentPrompt,
         titlePrompt,
       });
-      console.log(response, "responseeeee");
+      // console.log(response, "responseeeee");
       const data = await response.data;
-      console.log(data.text, "dataaaaaa");
+      // console.log(data.text, "dataaaaaa");
       if (data.text) {
         setPromptSummary(data.text);
       } else {
@@ -136,7 +136,7 @@ export const QuizProvider = ({ children }: Props) => {
         articleId,
       });
       const data = await response.data;
-      console.log(data, " aaaaaaaaa");
+      // console.log(data, " aaaaaaaaa");
       //   console.log(data.text, "data");
       // console.log(data.question, " question ");
       if (data.text) {
@@ -187,6 +187,8 @@ export const QuizProvider = ({ children }: Props) => {
     const newQuizData = [...quiz];
     newQuizData[currentQuestionIndex].selectedAnswer = index;
     setQuiz(newQuizData);
+    console.log(newQuizData, "where's the selected answerssssssssssss");
+    console.log(currentQuestionIndex, "q indexxxxxxxxxxx");
 
     if (currentQuestionIndex < newQuizData.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
@@ -195,7 +197,7 @@ export const QuizProvider = ({ children }: Props) => {
     }
   };
 
-  console.log(articles, "articleType articles");
+  // console.log(articles, "articleType articles");
   const findArticleHistory = articles?.articles?.find(
     (article) => article.id == id
   );

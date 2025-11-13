@@ -3,7 +3,7 @@ export type QuizQuestion = {
   options: string[];
   answer: number;
   // articleId: ArticleType;
-  selectedAnswer?: number;
+  selectedAnswer?: number | undefined;
   userAnswer?: string;
   showResult: boolean;
 };
