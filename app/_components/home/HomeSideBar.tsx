@@ -63,6 +63,8 @@ const HomeSideBar = ({ open }: Props) => {
           </div>
           <SidebarGroupContent className="overflow-y-auto">
             <SidebarMenu>
+              {!articles && <p className="text-6">No history yet</p>}
+              {/* {articles && */}
               {articles?.map((article) => {
                 // console.log("AAA", article);
                 return (
@@ -90,6 +92,7 @@ const HomeSideBar = ({ open }: Props) => {
                   </SidebarMenuItem>
                 );
               })}
+              {/* {!articles && <p className="text-6">No history yet</p>} */}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

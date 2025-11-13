@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -32,30 +31,10 @@ const QuickTest = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  // const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  // const [quizRawText, setQuizRawText] = useState<string>("");
-  // const [showResult, setShowResult] = useState<boolean>(false);
-
   useEffect(() => {
-    //   const result = localStorage.getItem("quizResult");
-    //   if (result) {
-    //     handleQuizRawText(result);
-    //     try {
-    //       const parseData = JSON.parse(result);
-    //       handleQuiz(parseData.quizArray || []);
-    //     } catch (e) {
-    //       console.error("Failed to parse quizResult:", e);
-    //     }
-    //   }
-
     const idFromPath = path.id;
     if (idFromPath) handleArticleId(Number(idFromPath));
   }, [path]);
-
-  // const currentQuestion = quiz[currentQuestionIndex];
-  // const nextQuestion = () => {
-  //   handleCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-  // };
 
   // console.log(quiz);
 
@@ -96,28 +75,24 @@ const QuickTest = () => {
                   Take a quick test about your knowledge from your content{" "}
                 </CardDescription>
               </div>
-
               <QuizExitBtn />
             </CardHeader>
           </div>
-
           <Card className="p-7">
             <CardContent className="flex flex-col gap-5 p-0">
               {quiz.length > 0 && quiz[currentQuestionIndex] && !showResult && (
                 <div>
-                  <div className="flex gap-12 justify-between">
+                  <div className="flex gap-12 justify-between mb-7">
                     <h3 className="text-xl leading-7 font-medium">
-                      {currentQuestionIndex + 1}.
                       {quiz[currentQuestionIndex].question}
-                      {/* {quiz[currentQuestionIndex].question} */}
                     </h3>
                     <p className="whitespace-nowrap">
                       {currentQuestionIndex + 1} / {quiz.length}
                     </p>
                   </div>
-                  {quiz[currentQuestionIndex].options.map((opt, i) => (
-                    <div className="flex flex-col gap-1" key={i}>
-                      <div className="flex gap-4 flex-wrap ">
+                  <div className="flex flex-wrap gap-4">
+                    {quiz[currentQuestionIndex].options.map((opt, i) => (
+                      <div className="flex gap-4 flex-wrap " key={i}>
                         {/* {currentQuestion.options.map((option, index) => ( */}
                         <Button
                           variant={"outline"}
@@ -132,8 +107,8 @@ const QuickTest = () => {
                           {opt}
                         </Button>
                       </div>
-                    </div>
-                  ))}
+                    ))}{" "}
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -141,7 +116,7 @@ const QuickTest = () => {
         </div>
       ) : (
         <div>
-          {showResult && (
+          {/* {showResult && (
             <div>
               <div className="flex gap-3">
                 <Sparkles />{" "}
@@ -166,31 +141,74 @@ const QuickTest = () => {
                     <CircleX className="text-[#B91C1C]" />
                   </div>
                 )}
-                <div className="flex justify-between mt-4">
-                  <Button
-                    className="text-black bg-white border"
-                    // onClick={generateQuiz}
-                  >
-                    Restart quiz
-                  </Button>
-                  {/* <Button className="flex" onClick={saveAndLeave}>
-                    Save and Leave
-                  </Button> */}
-                </div>{" "}
+              </Card>
+            </div>
+          )} */}
+          {showResult && (
+            <div>
+              <div className="flex gap-3 items-center">
+                <Sparkles />
+                <CardTitle className="font-semibold text-xl">
+                  Quiz Completed!
+                </CardTitle>
+              </div>
+              <CardDescription>Here’s how you did:</CardDescription>
+
+              <Card className="w-full mt-5 p-6">
+                <p className="mb-6 text-lg font-medium text-center">
+                  Your score:{" "}
+                  {quiz.filter((q) => q.selectedAnswer == q.answer).length}/{" "}
+                  {quiz.length}
+                </p>
+
+                <div className="flex flex-col gap-6">
+                  {quiz.map((q, index) => {
+                    const userAnswer = q.options[q.selectedAnswer ?? -1];
+                    const correctAnswer = q.options[q.answer];
+                    const isCorrect = userAnswer === correctAnswer;
+                    return (
+                      <div key={index} className="p-4 text-left">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold text-lg">
+                            {index + 1}. {q.question}
+                          </h3>
+                          {isCorrect ? (
+                            <CircleCheck className="text-green-500" />
+                          ) : (
+                            <CircleX className="text-red-500" />
+                          )}
+                        </div>
+
+                        <p className="text-sm">
+                          <span className="font-semibold">Your answer:</span>{" "}
+                          {userAnswer ? (
+                            // <span
+                            //   className={
+                            //     isCorrect ? "text-green-600" : "text-red-600"
+                            //   }
+                            <span>{userAnswer}</span>
+                          ) : (
+                            <span className="text-gray-500 italic">
+                              Not answered
+                            </span>
+                          )}
+                        </p>
+
+                        <p className="text-sm mt-1">
+                          <span className="font-semibold">Correct:</span>{" "}
+                          <span className="text-green-600">
+                            {correctAnswer}
+                          </span>
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </Card>
             </div>
           )}
-
-          {/* {quizData.length === 0 && (
-            <Button onClick={generateQuiz}>Generate Quiz (Re-fetch)</Button>
-          )} */}
         </div>
       )}
-      {/* <CardFooter className="flex justify-end p-0">
-          {currentQuestionIndex < quiz.length - 1 && (
-            <Button onClick={nextQuestion}>Next</Button>
-          )}
-        </CardFooter> */}
     </div>
   );
 };
