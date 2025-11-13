@@ -1,3 +1,4 @@
+import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 const Header = () => {
@@ -6,7 +7,8 @@ const Header = () => {
       <Link href={"/"}>
         <h4 className="text-6 font-semibold leading-6">Quiz app</h4>
       </Link>
-      <img src={"./user.svg"} />
+      {/* <img src={"./user.svg"} /> */}
+      <UserButton />
     </div>
   );
 };
