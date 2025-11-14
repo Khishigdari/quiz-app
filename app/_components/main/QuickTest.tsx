@@ -17,7 +17,6 @@ import axios from "axios";
 
 const QuickTest = () => {
   const path = useParams();
-  // const { articleId } = useParams();
 
   const {
     quiz,
@@ -93,7 +92,6 @@ const QuickTest = () => {
                   <div className="flex flex-wrap gap-4">
                     {quiz[currentQuestionIndex].options.map((opt, i) => (
                       <div className="flex gap-4 flex-wrap " key={i}>
-                        {/* {currentQuestion.options.map((option, index) => ( */}
                         <Button
                           variant={"outline"}
                           key={i}
@@ -116,90 +114,63 @@ const QuickTest = () => {
         </div>
       ) : (
         <div>
-          {/* {showResult && (
-            <div>
-              <div className="flex gap-3">
-                <Sparkles />{" "}
-                <CardTitle className="font-semibold text-xl">
-                  {" "}
-                  Quiz Completed!
-                </CardTitle>
-              </div>
-              <CardDescription>Let’s see what you did</CardDescription>
-              <Card className="w-[450px] mt-5 p-4 text-center">
-                <p className="mt-3">
-                  Your score:{" "}
-                  {quiz.filter((q) => q.selectedAnswer == q.answer).length}/{" "}
-                  {quiz.length}
-                </p>
-                {quiz.filter((q) => q.selectedAnswer == q.answer) ? (
-                  <div>
-                    <CircleCheck className="text-green-500" />
-                  </div>
-                ) : (
-                  <div>
-                    <CircleX className="text-[#B91C1C]" />
-                  </div>
-                )}
-              </Card>
-            </div>
-          )} */}
           {showResult && (
             <div>
-              <div className="flex gap-3 items-center">
-                <Sparkles />
-                <CardTitle className="font-semibold text-xl">
+              <div className="flex gap-2 items-center mb-2">
+                <Sparkles className="w-8 h-8" />
+                <CardTitle className="font-semibold text-2xl leading-8">
                   Quiz Completed!
                 </CardTitle>
               </div>
-              <CardDescription>Here’s how you did:</CardDescription>
+              <CardDescription className="text-base leading-6 font-medium mb-6">
+                Let’s see what you did
+              </CardDescription>
 
-              <Card className="w-full mt-5 p-6">
-                <p className="mb-6 text-lg font-medium text-center">
+              <Card className="w-full mt-5 p-7">
+                <p className="text-2xl font-semibold leading-8">
                   Your score:{" "}
-                  {quiz.filter((q) => q.selectedAnswer == q.answer).length}/{" "}
-                  {quiz.length}
+                  <span className="text-2xl leading-8 font-medium mx-2">
+                    {quiz.filter((q) => q.selectedAnswer == q.answer).length}
+                  </span>
+                  <span className="text-base leading-6 font-medium text-muted-foreground">
+                    / {quiz.length}
+                  </span>
                 </p>
-
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-5">
                   {quiz.map((q, index) => {
                     const userAnswer = q.options[q.selectedAnswer ?? -1];
                     const correctAnswer = q.options[q.answer];
                     const isCorrect = userAnswer === correctAnswer;
                     return (
-                      <div key={index} className="p-4 text-left">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-lg">
-                            {index + 1}. {q.question}
-                          </h3>
+                      <div key={index} className="text-left">
+                        <div className="flex gap-3 mb-2">
                           {isCorrect ? (
                             <CircleCheck className="text-green-500" />
                           ) : (
                             <CircleX className="text-red-500" />
                           )}
+                          <div className="font-medium text-xs leading-4 flex flex-col gap-1">
+                            <h3 className="text-muted-foreground">
+                              {index + 1}. {q.question}
+                            </h3>
+                            <p className="text-foreground">
+                              <span>Your answer:</span>{" "}
+                              {userAnswer ? (
+                                <span>{userAnswer}</span>
+                              ) : (
+                                <span className="text-gray-500 italic">
+                                  Not answered
+                                </span>
+                              )}
+                            </p>
+                            {!isCorrect && (
+                              <p className="text-green-500">
+                                <span>Correct:</span>{" "}
+                                <span>{correctAnswer}</span>
+                              </p>
+                            )}
+                          </div>
                         </div>
-
-                        <p className="text-sm">
-                          <span className="font-semibold">Your answer:</span>{" "}
-                          {userAnswer ? (
-                            // <span
-                            //   className={
-                            //     isCorrect ? "text-green-600" : "text-red-600"
-                            //   }
-                            <span>{userAnswer}</span>
-                          ) : (
-                            <span className="text-gray-500 italic">
-                              Not answered
-                            </span>
-                          )}
-                        </p>
-
-                        <p className="text-sm mt-1">
-                          <span className="font-semibold">Correct:</span>{" "}
-                          <span className="text-green-600">
-                            {correctAnswer}
-                          </span>
-                        </p>
                       </div>
                     );
                   })}
