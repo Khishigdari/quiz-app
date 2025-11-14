@@ -6,6 +6,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export const POST = async (req: NextRequest) => {
   const { contentPrompt, quiz, articleId } = await req.json();
+  console.log(articleId, "content aaaaaaaaaa");
 
   if (!contentPrompt) {
     return NextResponse.json(
@@ -49,11 +50,10 @@ export const POST = async (req: NextRequest) => {
       data: quizArray.map((q) => ({
         question: q.question,
         options: q.options,
-        answer: q.answer,
-        articleid: articleId,
+        answer: q.answer.toString(),
+        articleid: Number(articleId),
       })),
     });
-    console.log(quizContent, "content aaaaaaaaaa");
 
     return NextResponse.json({ text, data: quizContent });
   } catch (e) {

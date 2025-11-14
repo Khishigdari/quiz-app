@@ -128,17 +128,16 @@ export const QuizProvider = ({ children }: Props) => {
     // setTitlePrompt("");
     // setContentPrompt("");
     // setPromptSummary("");
+    // const articleid = articleId[id];
 
     try {
       const response = await axios.post("/api/quizQs", {
         contentPrompt,
         quiz,
-        articleId,
+        articleId: id,
       });
       const data = await response.data;
-      // console.log(data, " aaaaaaaaa");
-      //   console.log(data.text, "data");
-      // console.log(data.question, " question ");
+
       if (data.text) {
         //regex for cleaning json
         let cleanedJson = data.text.replace(/```json\s*|```/g, "").trim();
@@ -148,17 +147,15 @@ export const QuizProvider = ({ children }: Props) => {
 
         console.log(quizData);
         setQuiz(quizData);
-        // setQuiz(data.data || []);
         setCurrentQuestionIndex(0);
         setShowResult(false);
-        // localStorage.setItem("quizResult", JSON.stringify(data));
       } else {
         alert("Failed to generate summary");
       }
     } finally {
       setLoading(false);
 
-      router.push("/quiz");
+      router.push(`/quiz?id=${id}`);
     }
   };
 

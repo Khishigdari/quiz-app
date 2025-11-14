@@ -90,6 +90,7 @@ const SummaryHistory = () => {
             type="submit"
             className="w-content"
             onClick={refetchQuizGenerator}
+            disabled={loading}
           >
             {loading ? "Generating quizes..." : "Take a quiz"}
           </Button>
