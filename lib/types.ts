@@ -13,4 +13,5 @@ export type ArticleType = {
   title: string;
   content: string;
   summary: string;
+  // userId: number;
 };

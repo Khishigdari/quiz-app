@@ -15,7 +15,7 @@ import { SeeContentBtn } from "./SeeContentBtn";
 
 const SummaryHistory = () => {
   const router = useRouter();
-  const { refetchQuizGenerator, articles } = useData();
+  const { refetchQuizGenerator, refetchQuizzes, articles } = useData();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 

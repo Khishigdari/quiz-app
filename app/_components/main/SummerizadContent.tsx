@@ -19,6 +19,7 @@ const SummerizedContent = () => {
     titlePrompt,
     loading,
     refetchQuizGenerator,
+    refetchQuizzes,
   } = useData();
   return (
     <div>

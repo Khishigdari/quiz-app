@@ -62,7 +62,11 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-export const GET = async () => {
-  const quizzes = await prisma.quizzes.findMany();
+export const GET = async (req: NextRequest) => {
+  const articleId = req.nextUrl.searchParams.get("id");
+
+  const quizzes = await prisma.quizzes.findMany({
+    where: { articleid: Number(articleId) },
+  });
   return Response.json({ message: "success", quizzes });
 };

@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import axios from "axios";
+import { useUser } from "@clerk/nextjs";
 
 type Props = {
   children: ReactNode;
@@ -23,6 +24,7 @@ type QuizContextType = {
   quiz: QuizQuestion[];
   articles: ArticleType[];
   articleId: number | null;
+  // userId: number | null;
   currentQuestionIndex: number;
   showResult: boolean;
   refetchContentSummary: (e: React.FormEvent) => Promise<void>;
@@ -34,6 +36,7 @@ type QuizContextType = {
   handleContent: (value: string) => void;
   handleQuiz: (value: QuizQuestion[]) => void;
   handleArticleId: (value: number) => void;
+  // handleUserId: (value: number) => void;
   handleCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
   handleQuizRawText: (value: string) => void;
   findArticleHistory: any;
@@ -43,6 +46,7 @@ type QuizContextType = {
 const QuizContext = createContext({} as QuizContextType);
 
 export const QuizProvider = ({ children }: Props) => {
+  const { user } = useUser();
   const router = useRouter();
 
   const [titlePrompt, setTitlePrompt] = useState<string>("");
@@ -52,15 +56,18 @@ export const QuizProvider = ({ children }: Props) => {
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
   const [articles, setArticles] = useState<ArticleType[]>([]);
   const [articleId, setArticleId] = useState<number | null>(null);
+  // const [userId, setUserId] = useState<number | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [quizRawText, setQuizRawText] = useState<string>("");
   const [showResult, setShowResult] = useState<boolean>(false);
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  // const articleUserId = searchParams.get("userId");
 
   const contentSummary = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
     setLoading(true);
     // setTitlePrompt("");
     // setContentPrompt("");
@@ -76,6 +83,9 @@ export const QuizProvider = ({ children }: Props) => {
       const response = await axios.post("/api/summarizer", {
         contentPrompt,
         titlePrompt,
+        // userId: user.id,
+        clerkId: user.id,
+        // userId: articleUserId,
       });
       // console.log(response, "responseeeee");
       const data = await response.data;
@@ -85,6 +95,7 @@ export const QuizProvider = ({ children }: Props) => {
       } else {
         alert("Failed to generate summary");
       }
+      // console.log(data, "Looking for userId aaaaaaaaaaaaaaaa");
 
       if (data.data?.id) {
         setArticleId(data.data.id);
@@ -93,37 +104,14 @@ export const QuizProvider = ({ children }: Props) => {
       setLoading(false);
       // setTitlePrompt("");
       // setContentPrompt("");
+      // router.push(`/summarized?userId=${articleUserId}`);
       router.push("/summarized");
     }
   };
 
-  const handleTitle = (value: string) => {
-    setTitlePrompt(value);
-  };
-
-  const handleContent = (value: string) => {
-    setContentPrompt(value);
-  };
-
-  const handleQuiz = (value: QuizQuestion[]) => {
-    setQuiz(value);
-  };
-
-  const handleArticleId = (value: number | null) => {
-    setArticleId(value);
-  };
-
-  const handleCurrentQuestionIndex: React.Dispatch<
-    React.SetStateAction<number>
-  > = (value) => {
-    setCurrentQuestionIndex(value);
-  };
-  const handleQuizRawText = (value: string) => {
-    setQuizRawText(value);
-  };
-
   const quizGenerator = async (e: React.FormEvent) => {
     e.preventDefault();
+    // if (!id) return "ArticleId is missing";
     setLoading(true);
     // setTitlePrompt("");
     // setContentPrompt("");
@@ -169,15 +157,46 @@ export const QuizProvider = ({ children }: Props) => {
 
   const getQuizzes = async () => {
     setLoading(true);
+    // const result = await axios.get(`/api/quizQs?id=${id}`);
     const result = await axios.get("/api/quizQs");
     const data = await result.data;
     setQuiz(data);
     setLoading(false);
   };
 
+  const handleTitle = (value: string) => {
+    setTitlePrompt(value);
+  };
+
+  const handleContent = (value: string) => {
+    setContentPrompt(value);
+  };
+
+  const handleQuiz = (value: QuizQuestion[]) => {
+    setQuiz(value);
+  };
+
+  const handleArticleId = (value: number | null) => {
+    setArticleId(value);
+  };
+  // const handleUserId = (value: number | null) => {
+  //   setUserId(value);
+  // };
+
+  const handleCurrentQuestionIndex: React.Dispatch<
+    React.SetStateAction<number>
+  > = (value) => {
+    setCurrentQuestionIndex(value);
+  };
+  const handleQuizRawText = (value: string) => {
+    setQuizRawText(value);
+  };
+
   useEffect(() => {
+    // if (!id) return;
     getArticles();
     getQuizzes();
+    // }, [id]);
   }, []);
 
   const handleAnswer = (index: number) => {
@@ -212,6 +231,7 @@ export const QuizProvider = ({ children }: Props) => {
         handleContent,
         handleQuiz,
         handleArticleId,
+        // handleUserId,
         handleCurrentQuestionIndex,
         handleQuizRawText,
         titlePrompt,
@@ -222,6 +242,7 @@ export const QuizProvider = ({ children }: Props) => {
         articles,
         findArticleHistory,
         articleId,
+        // userId,
         currentQuestionIndex,
         showResult,
         refetchContentSummary: contentSummary,

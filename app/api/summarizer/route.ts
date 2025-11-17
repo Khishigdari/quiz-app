@@ -10,7 +10,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 // };
 
 export const POST = async (req: NextRequest) => {
-  const { contentPrompt, titlePrompt } = await req.json();
+  const { contentPrompt, titlePrompt, clerkId } = await req.json();
 
   if (!contentPrompt) {
     return NextResponse.json(
@@ -40,13 +40,27 @@ export const POST = async (req: NextRequest) => {
     //   [titlePrompt, transformedContentPrompt, text]
     // );
 
+    let user = await prisma.users.findUnique({
+      where: { clerkid: clerkId },
+    });
+
+    // if (!user) {
+    //   user=await prisma.users.create({
+    //     data: {
+    //       clerkid: clerkId
+    //     }
+    //   })
+    // }
+
     const articleContent = await prisma.articles.create({
       data: {
         title: titlePrompt,
         content: transformedContentPrompt,
         summary: text,
+        // userid: user.id,
       },
     });
+    // console.log(articleContent, "updated article content aaaaaaaaaaaa");
 
     return NextResponse.json({ text, data: articleContent });
   } catch (e) {

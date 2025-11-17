@@ -16,7 +16,7 @@ import { RotateCw } from "lucide-react";
 import { useData } from "@/app/_providers/QuizProvider";
 
 const QuizRestartBtn = () => {
-  const { refetchQuizGenerator, loading } = useData();
+  const { refetchQuizGenerator, refetchQuizzes, loading } = useData();
   return (
     <div>
       <AlertDialog>

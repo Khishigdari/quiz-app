@@ -17,12 +17,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   // console.log(user, "Clerkkkkkkkkkkkkkkk");
+  // console.log(user.id, "useridddddddddddd");
 
   const getArticles = async () => {
     setLoading(true);
     const result = await axios.get("/api/summarizer");
     const data = await result.data;
-    console.log(data, "data");
+    // console.log(data, "data");
     setArticles(data);
     setLoading(false);
   };
@@ -43,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           name: user.fullName,
         });
         const result = await axios.get("/api/users");
-        console.log(result, "get requesttttttt");
+        // console.log(result, "get requesttttttt");
         // console.log(result.data.users);
       } catch (err) {
         console.error(err);
