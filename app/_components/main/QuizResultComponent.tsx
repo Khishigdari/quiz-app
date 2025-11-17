@@ -2,7 +2,6 @@
 
 import { useData } from "@/app/_providers/QuizProvider";
 import React from "react";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -15,6 +14,8 @@ import QuizSaveLeave from "./QuizSaveLeave";
 
 const QuizResultComponent = () => {
   const { quiz, showResult } = useData();
+  //   const [result, setResult] = useState<number>();
+  //   setResult(quiz.filter((q) => q.selectedAnswer == q.answer).length);
   return (
     <div>
       {showResult && (
@@ -34,6 +35,7 @@ const QuizResultComponent = () => {
               Your score:{" "}
               <span className="text-2xl leading-8 font-medium mx-2">
                 {quiz.filter((q) => q.selectedAnswer == q.answer).length}
+                {/* {result} */}
               </span>
               <span className="text-base leading-6 font-medium text-muted-foreground">
                 / {quiz.length}

@@ -1,7 +1,7 @@
 "use client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import HomeSideBar from "../_components/home/HomeSideBar";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { QuizProvider } from "../_providers/QuizProvider";
 import { ArticleType } from "@/lib/types";
 import axios from "axios";
@@ -15,6 +15,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [articles, setArticles] = useState<ArticleType[]>([]);
   const { user, isLoaded } = useUser();
   const router = useRouter();
+
+  // console.log(user, "Clerkkkkkkkkkkkkkkk");
 
   const getArticles = async () => {
     setLoading(true);
@@ -30,6 +32,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       router.push("/login");
     }
   }, [isLoaded, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const createUser = async () => {
+      try {
+        await axios.post("/api/users", {
+          clerkId: user.id,
+          email: user.emailAddresses,
+          name: user.fullName,
+        });
+        const result = await axios.get("/api/users");
+        console.log(result.data.users);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    createUser();
+  }, [user]);
 
   if (!isLoaded) {
     return (
