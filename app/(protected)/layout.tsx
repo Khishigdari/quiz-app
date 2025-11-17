@@ -39,11 +39,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       try {
         await axios.post("/api/users", {
           clerkId: user.id,
-          email: user.emailAddresses,
+          email: user.primaryEmailAddress?.emailAddress,
           name: user.fullName,
         });
         const result = await axios.get("/api/users");
-        console.log(result.data.users);
+        console.log(result, "get requesttttttt");
+        // console.log(result.data.users);
       } catch (err) {
         console.error(err);
       }
