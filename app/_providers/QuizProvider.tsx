@@ -56,67 +56,43 @@ export const QuizProvider = ({ children }: Props) => {
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
   const [articles, setArticles] = useState<ArticleType[]>([]);
   const [articleId, setArticleId] = useState<number | null>(null);
-  // const [userId, setUserId] = useState<number | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [quizRawText, setQuizRawText] = useState<string>("");
   const [showResult, setShowResult] = useState<boolean>(false);
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  // const articleUserId = searchParams.get("userId");
 
   const contentSummary = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
     setLoading(true);
-    // setTitlePrompt("");
-    // setContentPrompt("");
-    // setPromptSummary("");
 
     try {
-      // const response = await fetch("/api/summarizer", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ contentPrompt, titlePrompt }),
-      // });
-
       const response = await axios.post("/api/summarizer", {
         contentPrompt,
         titlePrompt,
-        // userId: user.id,
         clerkId: user.id,
-        // userId: articleUserId,
       });
-      // console.log(response, "responseeeee");
       const data = await response.data;
-      // console.log(data.text, "dataaaaaa");
       if (data.text) {
         setPromptSummary(data.text);
       } else {
         alert("Failed to generate summary");
       }
-      // console.log(data, "Looking for userId aaaaaaaaaaaaaaaa");
 
       if (data.data?.id) {
         setArticleId(data.data.id);
       }
     } finally {
       setLoading(false);
-      // setTitlePrompt("");
-      // setContentPrompt("");
-      // router.push(`/summarized?userId=${articleUserId}`);
       router.push("/summarized");
     }
   };
 
   const quizGenerator = async (e: React.FormEvent) => {
     e.preventDefault();
-    // if (!id) return "ArticleId is missing";
     setLoading(true);
-    // setTitlePrompt("");
-    // setContentPrompt("");
-    // setPromptSummary("");
-    // const articleid = articleId[id];
 
     try {
       const response = await axios.post("/api/quizQs", {
@@ -150,14 +126,14 @@ export const QuizProvider = ({ children }: Props) => {
   const getArticles = async () => {
     setLoading(true);
     const result = await axios.get("/api/summarizer");
-    const data = await result.data;
-    setArticles(data);
+    // const data = await result.data;
+    // setArticles(data);
+    setArticles(result.data.articles);
     setLoading(false);
   };
 
   const getQuizzes = async () => {
     setLoading(true);
-    // const result = await axios.get(`/api/quizQs?id=${id}`);
     const result = await axios.get("/api/quizQs");
     const data = await result.data;
     setQuiz(data);
@@ -179,9 +155,6 @@ export const QuizProvider = ({ children }: Props) => {
   const handleArticleId = (value: number | null) => {
     setArticleId(value);
   };
-  // const handleUserId = (value: number | null) => {
-  //   setUserId(value);
-  // };
 
   const handleCurrentQuestionIndex: React.Dispatch<
     React.SetStateAction<number>
@@ -193,10 +166,8 @@ export const QuizProvider = ({ children }: Props) => {
   };
 
   useEffect(() => {
-    // if (!id) return;
     getArticles();
     getQuizzes();
-    // }, [id]);
   }, []);
 
   const handleAnswer = (index: number) => {
@@ -213,9 +184,8 @@ export const QuizProvider = ({ children }: Props) => {
     }
   };
 
-  // console.log(articles, "articleType articles");
-  const findArticleHistory = articles?.articles?.find(
-    (article) => article.id == id
+  const findArticleHistory = articles?.find(
+    (article) => article.id === Number(id)
   );
 
   useEffect(() => {
@@ -231,7 +201,6 @@ export const QuizProvider = ({ children }: Props) => {
         handleContent,
         handleQuiz,
         handleArticleId,
-        // handleUserId,
         handleCurrentQuestionIndex,
         handleQuizRawText,
         titlePrompt,
@@ -242,7 +211,6 @@ export const QuizProvider = ({ children }: Props) => {
         articles,
         findArticleHistory,
         articleId,
-        // userId,
         currentQuestionIndex,
         showResult,
         refetchContentSummary: contentSummary,
